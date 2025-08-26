@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import List
+import json
 
 # VALORES CONSTANTES
 class Rank(Enum):
@@ -67,6 +68,8 @@ class Ninja(ABC):
     def get_jutsus(self) -> List[Jutsu]: ...
     @abstractmethod
     def use_jutsu(self, name: str) -> str: ...
+    @abstractmethod
+    def accept(self, visitor: "Visitor") -> None: ...
 
 # MISION REPRESENTA CADA MISION CON SU DIFICULTAD RANGO REQUERIDO Y RECOMPENSA. TAMBIEN VALIDA SI PUEDE SER ACEPTADA
 class Mission:
@@ -88,6 +91,9 @@ class Mission:
             Rank.JONIN: [MissionRank.A, MissionRank.S, MissionRank.B, MissionRank.C, MissionRank.D]
         }
         return self.required_rank in hierarchy[rank]
+    
+    def accept(self, visitor: "Visitor") -> None:
+        visitor.visit_mission(self)
 
 # MISSIONMANAGER GESTIONA Y ADMINISTRA CADA MISION
 class MissionManager:
@@ -133,9 +139,13 @@ class BaseNinja(Ninja):
             if jutsu.get_name() == name:
                 return jutsu.execute(self)
         return f"{self._name} no conoce el jutsu {name}."
+    
+    def accept(self, visitor: "Visitor") -> None:
+         visitor.visit_ninja(self)
+    
 
 # ALDEANINJA (DA CONTENIDO A LA CREACION DE LOS NINJAS DE CADA FABRICA)
-class KonohaNinja(BaseNinja):
+class KonohaNinja(BaseNinja): 
     def __init__(self, name: str, rank: Rank, stats: Stats, jutsus: List[Jutsu]):
         super().__init__(name, rank, stats, jutsus)
 
@@ -211,3 +221,84 @@ class KumoFactory(NinjaFactory):
             CreateJutsu("Lightning Style: Thunderclap Arrow", "Flecha de trueno concentrado", 40),
             CreateJutsu("Static Armor", "Armadura eléctrica que paraliza al contacto", 30)
         ]
+    
+class Visitor(ABC):
+    @abstractmethod
+    def visit_ninja(self, ninja: Ninja) -> None: ...
+    @abstractmethod
+    def visit_mission(self, mission: Mission) -> None: ...
+    def reset(self): pass
+    def result(self): return None
+
+class JSONExportVisitor(Visitor):
+    def __init__(self):
+        self.reset()
+
+    def reset(self): self._data = {"ninjas": [], "missions": []}
+
+    def visit_ninja(self, ninja: Ninja) -> None:
+        stats = ninja.get_stats()
+        jutsus = [{
+            "name": j.get_name(),
+            "description": j.get_description(),
+            "chakra_cost": j.get_chakra_cost()
+        } for j in ninja.get_jutsus()]
+        village = type(ninja).__name__.replace("Ninja", "")
+        self._data["ninjas"].append({
+            "name": ninja.get_name(),
+            "village": village,
+            "rank": ninja.get_rank().value,
+            "stats": {"attack": stats.attack, "defense": stats.defense, "chakra": stats.chakra},
+            "jutsus": jutsus
+        })
+
+    def visit_mission(self, mission: Mission) -> None:
+        self._data["missions"].append({
+            "id": mission.id,
+            "title": mission.title,
+            "required_rank": mission.required_rank.value,
+            "reward": mission.reward,
+            "description": mission.description
+        })
+
+    def result(self): return json.dumps(self._data, ensure_ascii=False, indent=2)
+
+def export_all(visitor: Visitor, ninjas: List[Ninja], missions: List[Mission]):
+    visitor.reset()
+    for n in ninjas: n.accept(visitor)
+    for m in missions: m.accept(visitor)
+    return visitor.result()
+
+
+
+def main():
+    # Crear ninjas con factories
+    konoha_factory = KonohaFactory()
+    suna_factory = SunaFactory()
+    kiri_factory = KiriFactory()
+
+    naruto = konoha_factory.createNinja("Naruto Uzumaki", Rank.GENIN)
+    gaara = suna_factory.createNinja("Gaara", Rank.JONIN)
+    zabuza = kiri_factory.createNinja("Zabuza Momochi", Rank.CHUNIN)
+    ninjas = [naruto, gaara, zabuza]
+
+    # Crear misiones
+    m1 = Mission("M001", "Proteger al Puente", MissionRank.C, 500, "Defender al constructor de un puente.")
+    m2 = Mission("M002", "Capturar espía", MissionRank.A, 1200, "Atrapar al espía en territorio enemigo.")
+    m3 = Mission("M003", "Defender Konoha", MissionRank.S, 5000, "Proteger la aldea de un ataque enemigo.")
+    missions = [m1, m2, m3]
+
+    # Exportar en JSON con Visitor
+    json_exporter = JSONExportVisitor()
+    reporte_json = export_all(json_exporter, ninjas, missions)
+
+    # Guardar en archivo reporte.json
+    with open("reporte.json", "w", encoding="utf-8") as f:
+        f.write(reporte_json)
+
+    print("Archivo generado")
+    print("Ninjas exportados:", [n.get_name() for n in ninjas])
+    print("Misiones exportadas:", [m.title for m in missions])
+
+if __name__ == "__main__":
+    main()
