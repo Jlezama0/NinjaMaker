@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 
 
 
-class Stats:
+class Stats_Ninja:
     def __init__(self, attack=0, defense=0, chakra=0):
         self.attack = attack
         self.defense = defense
@@ -65,7 +65,7 @@ class Ninja(ABC):
 
 
 class BaseNinja(Ninja):
-    def __init__(self, name: str, rank: str, stats: Stats, jutsus: List[Jutsu]):
+    def __init__(self, name: str, rank: str, stats: Stats_Ninja, jutsus: List[Jutsu]):
         self._name = name
         self._rank = rank
         self._stats = stats
@@ -111,7 +111,7 @@ class NinjaFactory(ABC):
 
 class KonohaFactory(NinjaFactory):
     def createNinja(self, name="Naruto Uzumaki", rank="Genin") -> Ninja:
-        stats = Stats(attack=70, defense=60, chakra=80)
+        stats = Stats_Ninja(attack=70, defense=60, chakra=80)
         return KonohaNinja(name, rank, stats, self.createJutsuSet())
 
     def createJutsuSet(self) -> List[Jutsu]:
@@ -123,7 +123,7 @@ class KonohaFactory(NinjaFactory):
 
 class SunaFactory(NinjaFactory):
     def createNinja(self, name="Gaara", rank="Jonin") -> Ninja:
-        stats = Stats(attack=90, defense=85, chakra=95)
+        stats = Stats_Ninja(attack=90, defense=85, chakra=95)
         return SunaNinja(name, rank, stats, self.createJutsuSet())
 
     def createJutsuSet(self) -> List[Jutsu]:
@@ -135,7 +135,7 @@ class SunaFactory(NinjaFactory):
 
 class KiriFactory(NinjaFactory):
     def createNinja(self, name="Zabuza Momochi", rank="Chunin") -> Ninja:
-        stats = Stats(attack=80, defense=70, chakra=75)
+        stats = Stats_Ninja(attack=80, defense=70, chakra=75)
         return KiriNinja(name, rank, stats, self.createJutsuSet())
 
     def createJutsuSet(self) -> List[Jutsu]:
@@ -147,7 +147,7 @@ class KiriFactory(NinjaFactory):
 
 class IwaFactory(NinjaFactory):
     def createNinja(self, name="Onoki", rank="Tsuchikage") -> Ninja:
-        stats = Stats(attack=85, defense=70, chakra=90)
+        stats = Stats_Ninja(attack=85, defense=70, chakra=90)
         return IwaNinja(name, rank, stats, self.createJutsuSet())
 
     def createJutsuSet(self) -> List[Jutsu]:
@@ -159,7 +159,7 @@ class IwaFactory(NinjaFactory):
 
 class KumoFactory(NinjaFactory):
     def createNinja(self, name="A", rank="Raikage") -> Ninja:
-        stats = Stats(attack=95, defense=80, chakra=85)
+        stats = Stats_Ninja(attack=95, defense=80, chakra=85)
         return KumoNinja(name, rank, stats, self.createJutsuSet())
 
     def createJutsuSet(self) -> List[Jutsu]:
