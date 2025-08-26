@@ -5,9 +5,7 @@ if TYPE_CHECKING:
     from Visitor import Visitor
 
 
-# ---------------------------------------------------------------------
-# Stats (para todos los ninjas)
-# ---------------------------------------------------------------------
+
 class Stats:
     def __init__(self, attack=0, defense=0, chakra=0):
         self.attack = attack
@@ -18,9 +16,7 @@ class Stats:
         return self.__dict__
 
 
-# ---------------------------------------------------------------------
-# Jutsu
-# ---------------------------------------------------------------------
+
 class Jutsu(ABC):
     @abstractmethod
     def get_name(self) -> str: ...
@@ -51,9 +47,7 @@ class CreateJutsu(Jutsu):
         return f"{user.get_name()} usa {self._name}! (Costo {self._chakra_cost} chakra)"
 
 
-# ---------------------------------------------------------------------
-# Ninja abstracto
-# ---------------------------------------------------------------------
+
 class Ninja(ABC):
     @abstractmethod
     def get_name(self): ...
@@ -69,9 +63,7 @@ class Ninja(ABC):
     def accept(self, visitor: "Visitor") -> None: ...
 
 
-# ---------------------------------------------------------------------
-# BaseNinja con name, rank y stats
-# ---------------------------------------------------------------------
+
 class BaseNinja(Ninja):
     def __init__(self, name: str, rank: str, stats: Stats, jutsus: List[Jutsu]):
         self._name = name
@@ -101,9 +93,7 @@ class BaseNinja(Ninja):
         visitor.visit_ninja(self)
 
 
-# ---------------------------------------------------------------------
-# Clases concretas de ninjas
-# ---------------------------------------------------------------------
+
 class KonohaNinja(BaseNinja): pass
 class SunaNinja(BaseNinja): pass
 class KiriNinja(BaseNinja): pass
@@ -111,9 +101,7 @@ class IwaNinja(BaseNinja): pass
 class KumoNinja(BaseNinja): pass
 
 
-# ---------------------------------------------------------------------
-# Factories
-# ---------------------------------------------------------------------
+
 class NinjaFactory(ABC):
     @abstractmethod
     def createNinja(self, name: str, rank: str) -> Ninja: ...
