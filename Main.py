@@ -4,7 +4,6 @@ from MissionSystem import Mission, MissionRank
 from Visitor import JSONExportVisitor, export_all
 
 def main():
-    # Crear ninjas con factories (sin pasar parámetros, porque tus factories no los reciben)
     konoha_factory = KonohaFactory()
     suna_factory = SunaFactory()
     kiri_factory = KiriFactory()
@@ -22,16 +21,14 @@ def main():
 
     missions = [m1, m2, m3]
 
-    # Exportar en JSON con Visitor
+    # Exportar en JSON
     json_exporter = JSONExportVisitor()
     reporte_json = export_all(json_exporter, ninjas, missions)
 
-    # Guardar en archivo reporte.json
     with open("reporte.json", "w", encoding="utf-8") as f:
         f.write(reporte_json)
 
     print("Archivo generado")
-    # Como los ninjas no tienen get_name(), mostramos solo el tipo de ninja (aldea)
     print("Ninjas exportados:", [type(n).__name__ for n in ninjas])
     print("Misiones exportadas:", [m.title for m in missions])
 
