@@ -7,6 +7,11 @@ from typing import List
 from NinjaBuilder import FinalNinja, Stats, Director, NinjaBuilder
 from FactoryAbstractNaruto import KonohaFactory
 
+from typing import List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from Visitor import Visitor
+
 # --- Definiciones de Rangos (Necesarias para el sistema de misiones) ---
 
 class Rank(Enum):
@@ -65,6 +70,10 @@ class Mission:
             Rank.JONIN: [MissionRank.D, MissionRank.C, MissionRank.B, MissionRank.A, MissionRank.S]
         }
         return self.required_rank in hierarchy.get(rank, [])
+    
+     # <<<--- MÉTODO accept agregado para el Visitor
+    def accept(self, visitor: "Visitor") -> None:
+        visitor.visit_mission(self)
 
 
 class MissionManager:
@@ -86,12 +95,12 @@ class MissionManager:
         """
         mission = next((m for m in self.missions if m.id == mission_id), None)
         if not mission:
-            return "❌ Misión no encontrada."
+            return " Misión no encontrada."
         
         if mission.is_eligible(ninja):
-            return f"✅ ¡{ninja.name} ha aceptado la misión '{mission.title}'!"
+            return f" ¡{ninja.name} ha aceptado la misión '{mission.title}'!"
         
-        return f"❌ {ninja.name} no tiene el rango suficiente para la misión '{mission.title}'."
+        return f" {ninja.name} no tiene el rango suficiente para la misión '{mission.title}'."
 
 # --- EJEMPLO DE USO ---
 

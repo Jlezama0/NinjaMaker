@@ -1,11 +1,26 @@
 from abc import ABC, abstractmethod
-from enum import Enum
-from typing import List
+from typing import List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from Visitor import Visitor
 
 
+# ---------------------------------------------------------------------
+# Stats (para todos los ninjas)
+# ---------------------------------------------------------------------
+class Stats:
+    def __init__(self, attack=0, defense=0, chakra=0):
+        self.attack = attack
+        self.defense = defense
+        self.chakra = chakra
+
+    def to_dict(self):
+        return self.__dict__
 
 
-# JUTSU PRODUCTO ABSTRACTO (ESTE NOS PERMITE DEFINIR LO QUE PUEDE HACER CADA JUTSU)
+# ---------------------------------------------------------------------
+# Jutsu
+# ---------------------------------------------------------------------
 class Jutsu(ABC):
     @abstractmethod
     def get_name(self) -> str: ...
@@ -16,7 +31,7 @@ class Jutsu(ABC):
     @abstractmethod
     def execute(self, user: "Ninja") -> str: ...
 
-# CREATEJUTSU PRODUCTO CONCRETO (COMPLEMENTA LO QUE DEBE TENER CADA JUTSU)
+
 class CreateJutsu(Jutsu):
     def __init__(self, name: str, description: str, chakra_cost: int):
         self._name = name
@@ -36,60 +51,80 @@ class CreateJutsu(Jutsu):
         return f"{user.get_name()} usa {self._name}! (Costo {self._chakra_cost} chakra)"
 
 
-
-# NINJA PRODUCTO ABSTRACTO (DEFINE A CADA NINJA PERO NO REPRESENTA A NINGUN NINJA EN ESPECIFICO)
+# ---------------------------------------------------------------------
+# Ninja abstracto
+# ---------------------------------------------------------------------
 class Ninja(ABC):
-    def get_jutsus(self) -> List["Jutsu"]: ...
+    @abstractmethod
+    def get_name(self): ...
+    @abstractmethod
+    def get_rank(self): ...
+    @abstractmethod
+    def get_stats(self): ...
+    @abstractmethod
+    def get_jutsus(self) -> List[Jutsu]: ...
     @abstractmethod
     def use_jutsu(self, name: str) -> str: ...
+    @abstractmethod
+    def accept(self, visitor: "Visitor") -> None: ...
 
 
-
-# FACTORYNINJA CLASE BASE DE NINJAS (DEFINE LA ESTRUCTURA COMÚN QUE USAN LAS FÁBRICAS PARA CREAR NINJAS)
+# ---------------------------------------------------------------------
+# BaseNinja con name, rank y stats
+# ---------------------------------------------------------------------
 class BaseNinja(Ninja):
-    def __init__(self, jutsus: List["Jutsu"]):
+    def __init__(self, name: str, rank: str, stats: Stats, jutsus: List[Jutsu]):
+        self._name = name
+        self._rank = rank
+        self._stats = stats
         self._jutsus = jutsus
 
-    def get_jutsus(self) -> List["Jutsu"]:
+    def get_name(self):
+        return self._name
+
+    def get_rank(self):
+        return self._rank
+
+    def get_stats(self):
+        return self._stats
+
+    def get_jutsus(self) -> List[Jutsu]:
         return self._jutsus
 
     def use_jutsu(self, name: str) -> str:
         for jutsu in self._jutsus:
             if jutsu.get_name() == name:
                 return jutsu.execute(self)
-        return f"Este ninja no conoce el jutsu {name}."
+        return f"{self._name} no conoce el jutsu {name}."
 
-# ALDEANINJA (DA CONTENIDO A LA CREACION DE LOS NINJAS DE CADA FABRICA)
-class KonohaNinja(BaseNinja):
-    def __init__(self, jutsus: List["Jutsu"]):
-        super().__init__(jutsus)
+    def accept(self, visitor: "Visitor") -> None:
+        visitor.visit_ninja(self)
 
-class SunaNinja(BaseNinja):
-    def __init__(self, jutsus: List["Jutsu"]):
-        super().__init__(jutsus)
 
-class KiriNinja(BaseNinja):
-    def __init__(self, jutsus: List["Jutsu"]):
-        super().__init__(jutsus)
+# ---------------------------------------------------------------------
+# Clases concretas de ninjas
+# ---------------------------------------------------------------------
+class KonohaNinja(BaseNinja): pass
+class SunaNinja(BaseNinja): pass
+class KiriNinja(BaseNinja): pass
+class IwaNinja(BaseNinja): pass
+class KumoNinja(BaseNinja): pass
 
-class IwaNinja(BaseNinja):
-    def __init__(self, jutsus: List["Jutsu"]):
-        super().__init__(jutsus)
 
-class KumoNinja(BaseNinja):
-    def __init__(self, jutsus: List["Jutsu"]):
-        super().__init__(jutsus)
-
-# NINJAFACTORY Y ALDEAFACTORY (ES LA QUE SE ENCARGA DE CREAR CADA NINJA Y JUTSUS BASICOS)
+# ---------------------------------------------------------------------
+# Factories
+# ---------------------------------------------------------------------
 class NinjaFactory(ABC):
     @abstractmethod
-    def createNinja(self) -> Ninja: ...
+    def createNinja(self, name: str, rank: str) -> Ninja: ...
     @abstractmethod
     def createJutsuSet(self) -> List[Jutsu]: ...
 
+
 class KonohaFactory(NinjaFactory):
-    def createNinja(self) -> Ninja:
-        return KonohaNinja(self.createJutsuSet())
+    def createNinja(self, name="Naruto Uzumaki", rank="Genin") -> Ninja:
+        stats = Stats(attack=70, defense=60, chakra=80)
+        return KonohaNinja(name, rank, stats, self.createJutsuSet())
 
     def createJutsuSet(self) -> List[Jutsu]:
         return [
@@ -97,9 +132,11 @@ class KonohaFactory(NinjaFactory):
             CreateJutsu("Kage Bunshin", "Clones de sombra", 20)
         ]
 
+
 class SunaFactory(NinjaFactory):
-    def createNinja(self) -> Ninja:
-        return SunaNinja(self.createJutsuSet())
+    def createNinja(self, name="Gaara", rank="Jonin") -> Ninja:
+        stats = Stats(attack=90, defense=85, chakra=95)
+        return SunaNinja(name, rank, stats, self.createJutsuSet())
 
     def createJutsuSet(self) -> List[Jutsu]:
         return [
@@ -107,9 +144,11 @@ class SunaFactory(NinjaFactory):
             CreateJutsu("Sabaku Taisō", "Aplastamiento de arena", 40)
         ]
 
+
 class KiriFactory(NinjaFactory):
-    def createNinja(self) -> Ninja:
-        return KiriNinja(self.createJutsuSet())
+    def createNinja(self, name="Zabuza Momochi", rank="Chunin") -> Ninja:
+        stats = Stats(attack=80, defense=70, chakra=75)
+        return KiriNinja(name, rank, stats, self.createJutsuSet())
 
     def createJutsuSet(self) -> List[Jutsu]:
         return [
@@ -117,9 +156,11 @@ class KiriFactory(NinjaFactory):
             CreateJutsu("Suiton: Suiryūdan", "Dragón de agua", 35)
         ]
 
+
 class IwaFactory(NinjaFactory):
-    def createNinja(self) -> Ninja:
-        return IwaNinja(self.createJutsuSet())
+    def createNinja(self, name="Onoki", rank="Tsuchikage") -> Ninja:
+        stats = Stats(attack=85, defense=70, chakra=90)
+        return IwaNinja(name, rank, stats, self.createJutsuSet())
 
     def createJutsuSet(self) -> List[Jutsu]:
         return [
@@ -127,14 +168,17 @@ class IwaFactory(NinjaFactory):
             CreateJutsu("Earth Wall", "Muro de tierra defensivo", 25)
         ]
 
+
 class KumoFactory(NinjaFactory):
-    def createNinja(self) -> Ninja:
-        return KumoNinja(self.createJutsuSet())
+    def createNinja(self, name="A", rank="Raikage") -> Ninja:
+        stats = Stats(attack=95, defense=80, chakra=85)
+        return KumoNinja(name, rank, stats, self.createJutsuSet())
 
     def createJutsuSet(self) -> List[Jutsu]:
         return [
             CreateJutsu("Lightning Style: Thunderclap Arrow", "Flecha de trueno concentrado", 40),
             CreateJutsu("Static Armor", "Armadura eléctrica que paraliza al contacto", 30)
         ]
+
 
 
