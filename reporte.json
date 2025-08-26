@@ -1,0 +1,93 @@
+{
+  "ninjas": [
+    {
+      "name": "Naruto Uzumaki",
+      "village": "Konoha",
+      "rank": "Genin",
+      "stats": {
+        "attack": 70,
+        "defense": 60,
+        "chakra": 80
+      },
+      "jutsus": [
+        {
+          "name": "Rasengan",
+          "description": "Esfera de chakra concentrado",
+          "chakra_cost": 30
+        },
+        {
+          "name": "Kage Bunshin",
+          "description": "Clones de sombra",
+          "chakra_cost": 20
+        }
+      ]
+    },
+    {
+      "name": "Gaara",
+      "village": "Suna",
+      "rank": "Jonin",
+      "stats": {
+        "attack": 90,
+        "defense": 85,
+        "chakra": 95
+      },
+      "jutsus": [
+        {
+          "name": "Sabaku Kyū",
+          "description": "Prisión de arena",
+          "chakra_cost": 25
+        },
+        {
+          "name": "Sabaku Taisō",
+          "description": "Aplastamiento de arena",
+          "chakra_cost": 40
+        }
+      ]
+    },
+    {
+      "name": "Zabuza Momochi",
+      "village": "Kiri",
+      "rank": "Chunin",
+      "stats": {
+        "attack": 80,
+        "defense": 70,
+        "chakra": 75
+      },
+      "jutsus": [
+        {
+          "name": "Kirigakure no Jutsu",
+          "description": "Ocultar en la niebla",
+          "chakra_cost": 15
+        },
+        {
+          "name": "Suiton: Suiryūdan",
+          "description": "Dragón de agua",
+          "chakra_cost": 35
+        }
+      ]
+    }
+  ],
+  "missions": [
+    {
+      "id": "M001",
+      "title": "Proteger al Puente",
+      "required_rank": "C",
+      "reward": 500,
+      "description": "Defender al constructor de un puente."
+    },
+    {
+      "id": "M002",
+      "title": "Capturar espía",
+      "required_rank": "A",
+      "reward": 1200,
+      "description": "Atrapar al espía en territorio enemigo."
+    },
+    {
+      "id": "M003",
+      "title": "Defender Konoha",
+      "required_rank": "S",
+      "reward": 5000,
+      "description": "Proteger la aldea de un ataque enemigo."
+    }
+  ]
+}

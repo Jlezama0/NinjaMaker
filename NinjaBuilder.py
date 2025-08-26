@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import List
 
 from FactoryAbstractNaruto import Jutsu, NinjaFactory, KonohaFactory, IwaFactory, KiriFactory, KumoFactory, SunaFactory
+from Visitor import Visitor
 
 
 class Stats:
@@ -26,7 +27,6 @@ class FinalNinja:
     def __init__(self):
         self.name = None
         self.rank = None
-        self.chakra = None
         self.clan = None
         self.styleFight = None
         self.weapon = None
@@ -38,7 +38,6 @@ class FinalNinja:
         return {
             "name": self.name,
             "rank": self.rank,
-            "chakra": self.chakra,
             "clan": self.clan,
             "styleFight": self.styleFight,
             "weapon": self.weapon,
@@ -50,6 +49,9 @@ class FinalNinja:
     def __str__(self):
         return str(self.to_dict())
     
+    def accept(self, visitor: "Visitor") -> None:
+        visitor.visit_ninja(self)
+    
 
 # Interfaz Builder
 class Builder(ABC):
@@ -59,8 +61,6 @@ class Builder(ABC):
     def setName(self, name: str): ...
     @abstractmethod
     def setRank(self, rank: str): ...
-    @abstractmethod
-    def setChakra(self, chakra: int): ...
     @abstractmethod
     def setClan(self, clan: str): ...
     @abstractmethod
@@ -94,9 +94,6 @@ class NinjaBuilder(Builder):
         self.ninja.rank = rank
         return self
 
-    def setChakra(self, chakra: int):
-        self.ninja.chakra = chakra
-        return self
 
     def setClan(self, clan: str):
         self.ninja.clan = clan
@@ -139,7 +136,6 @@ class Director:
         *,
         name: str,
         rank: str,
-        chakra: int,
         clan: str,
         styleFight: str,
         weapon: str,
@@ -153,7 +149,6 @@ class Director:
         builder.reset()
         builder.setName(name)\
             .setRank(rank)\
-            .setChakra(chakra)\
             .setClan(clan)\
             .setStyleFight(styleFight)\
             .setWeapon(weapon)\
@@ -165,23 +160,35 @@ class Director:
         return builder.getResult()
     
 
+    # --- EJEMPLO DE USO ---
+
 factory = KonohaFactory()
 director = Director(factory)
 builder = NinjaBuilder()
 
-stats = Stats()
-stats.Ninjutsu = 80
-stats.Willpower = 95
+stats_iniciales = Stats()
+stats_iniciales.Chakra = 90
+stats_iniciales.chakraControl = 60
+stats_iniciales.Ninjutsu = 80
+stats_iniciales.Taijutsu = 50
+stats_iniciales.Speed = 56
+stats_iniciales.Resistance = 78
+stats_iniciales.Intelligence = 58
+stats_iniciales.Willpower = 95
 
-ninja_final = director.makeNinja(
+# Creamos a nuestro ninja final
+ninja_naruto = director.makeNinja(
     builder,
     name="Naruto",
     rank="Genin",
-    chakra=1000,
     clan="Uzumaki",
     styleFight="Multi-clones",
     weapon="Kunai",
-    stats=stats
+    stats=stats_iniciales
 )
 
-print(ninja_final)  # incluye village="Konoha" y jutsus de la fábrica
+
+#print("--- Creación del Ninja ---")
+#print(ninja_naruto)
+#print("-" * 25)
+

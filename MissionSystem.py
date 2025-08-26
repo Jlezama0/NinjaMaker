@@ -104,24 +104,29 @@ class MissionManager:
 
 # --- EJEMPLO DE USO ---
 
-# 1. Creamos un ninja de rango Genin
 factory = KonohaFactory()
 director = Director(factory)
 builder = NinjaBuilder()
 
-stats_naruto = Stats()
-stats_naruto.Ninjutsu = 90
-stats_naruto.Willpower = 100
+stats_iniciales = Stats()
+stats_iniciales.Chakra = 90
+stats_iniciales.chakraControl = 60
+stats_iniciales.Ninjutsu = 80
+stats_iniciales.Taijutsu = 50
+stats_iniciales.Speed = 56
+stats_iniciales.Resistance = 78
+stats_iniciales.Intelligence = 58
+stats_iniciales.Willpower = 95
 
+# Creamos a nuestro ninja final
 ninja_naruto = director.makeNinja(
     builder,
     name="Naruto",
-    rank="Genin",  # <- Rango importante para las misiones
-    chakra=1000,
+    rank="Genin",
     clan="Uzumaki",
     styleFight="Multi-clones",
     weapon="Kunai",
-    stats=stats_naruto
+    stats=stats_iniciales
 )
 
 print("--- Creación del Ninja ---")

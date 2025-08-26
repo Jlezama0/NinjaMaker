@@ -2,6 +2,7 @@
 
 from NinjaBuilder import FinalNinja, Stats, Director, NinjaBuilder
 from FactoryAbstractNaruto import KonohaFactory
+from NinjaBuilder import ninja_naruto
 
 class TrainingSystem:
     """
@@ -34,31 +35,7 @@ class TrainingSystem:
             # Si el atributo no existe, mostramos un mensaje de error.
             print(f"❌ Error: El atributo '{attribute}' no es una estadística entrenable.\n")
 
-# --- EJEMPLO DE USO ---
-
-# 1. Reutilizamos el código que ya tenías para crear un ninja
-factory = KonohaFactory()
-director = Director(factory)
-builder = NinjaBuilder()
-
-stats_iniciales = Stats()
-stats_iniciales.Ninjutsu = 80
-stats_iniciales.Taijutsu = 50
-stats_iniciales.Willpower = 95
-
-# Creamos a nuestro ninja final
-ninja_naruto = director.makeNinja(
-    builder,
-    name="Naruto",
-    rank="Genin",
-    chakra=1000,
-    clan="Uzumaki",
-    styleFight="Multi-clones",
-    weapon="Kunai",
-    stats=stats_iniciales
-)
-
-print("--- Creación del Ninja ---")
+# 1. Estadisticas Iniciales
 print(ninja_naruto)
 print("-" * 25)
 

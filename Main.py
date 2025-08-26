@@ -1,9 +1,12 @@
 # main.py
 from FactoryAbstractNaruto import KonohaFactory, SunaFactory, KiriFactory
 from MissionSystem import Mission, MissionRank
+from NinjaBuilder import Director, NinjaBuilder, Stats
 from Visitor import JSONExportVisitor, export_all
 
 def main():
+
+
     konoha_factory = KonohaFactory()
     suna_factory = SunaFactory()
     kiri_factory = KiriFactory()
